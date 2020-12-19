@@ -1,8 +1,12 @@
 import React from 'react'
 import type { FC } from 'react'
-import { makeStyles } from '@material-ui/core'
+import { jssPreset, makeStyles, StylesProvider, ThemeProvider } from '@material-ui/core'
+import { create } from 'jss'
+import rtl from 'jss-rtl'
 
-import { Theme } from './theme'
+import { createTheme, Theme } from './theme'
+
+import useSettings from './hooks/useSettings'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -14,10 +18,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
+const jss = create({ plugins: [...jssPreset().plugins, rtl()] })
+
 const App: FC = () => {
   const classes = useStyles()
+  const { settings } = useSettings()
 
-  return <div className={classes.root}>App</div>
+  const theme = createTheme({ theme: settings.theme })
+
+  return (
+    <ThemeProvider theme={theme}>
+      <StylesProvider jss={jss}>
+        <div className={classes.root}>App</div>
+      </StylesProvider>
+    </ThemeProvider>
+  )
 }
 
 export default App
